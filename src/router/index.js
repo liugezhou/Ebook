@@ -31,16 +31,29 @@ export const constantRoutes = [
     }]
   },
   {
+    path: '/menu',
+    component: Layout,
+    redirect: '/menu',
+    children: [{
+      path: 'menu',
+      name: 'Menu',
+      component: () => import('@/views/menu/create'),
+      meta: { title: 'Menu-Demo', icon: 'dashboard' }
+    }]
+  },
+  {
     path: '/book',
     component: Layout,
-    redirect:'/book/create',
-    meta: {title:'图书管理',icon:'example'},
+    redirect: '/book/create',
+    meta: { title: '图书管理', icon: 'dashboard' },
     children:[{
       path: '/book/create',
+      name: 'create',
       component: () => import('@/views/book/create'),
       meta: { title: '上传图书', icon: 'example' }
     },{
       path: '/book/look',
+      name: 'look',
       component: () => import('@/views/book/create'),
       meta: { title: '查看图书', icon: 'eye'}
     }
@@ -51,10 +64,9 @@ export const asyncRoutes = [
   {
     path: '/test',
     component: Layout,
-    redirect:'/test/create',
-    meta: {title:'权限测试',icon:'example',roles:['admin']},
     children:[{
       path: '/test/create',
+      name: 'test',
       component: () => import('@/views/test/create'),
       meta: { title: '目录一', icon: 'example' }
     }
