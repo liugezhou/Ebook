@@ -12,7 +12,7 @@
         <h3 class="title">六个周读书管理后台</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item>
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
@@ -62,18 +62,10 @@
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate";
 
 export default {
   name: "Login",
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error("请输入正确的用户名"));
-      } else {
-        callback();
-      }
-    };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error("密码不能小于6位"));
@@ -84,12 +76,9 @@ export default {
     return {
       loginForm: {
         username: "admin",
-        password: "123123"
+        password: "123456"
       },
       loginRules: {
-        username: [
-          { required: true, trigger: "blur", validator: validateUsername }
-        ],
         password: [
           { required: true, trigger: "blur", validator: validatePassword }
         ]
