@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Admin Template',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: '六个周后台管理平台',
+      logo: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1583221213958&di=6e93afa9cf20e45ffde1f04651bd118a&imgtype=0&src=http%3A%2F%2Fwww.mux5.com%2Fpicture%2F3881ad96ba228dcd6c05acf0b2af5ef9.jpg'
     }
   }
 }
