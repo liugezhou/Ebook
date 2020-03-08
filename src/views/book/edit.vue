@@ -1,6 +1,6 @@
 <template>
   <div>
-    <detail :isEdit="false"></detail>
+    <detail isEdit />
   </div>
 </template>
 
@@ -8,9 +8,9 @@
 import Detail from './components/Detail'
 export default {
     data(){
-      return{
+        return{
 
-      }
+        }
     },
     methods:{
 

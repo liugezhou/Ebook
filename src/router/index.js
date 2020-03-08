@@ -31,49 +31,37 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/menu',
-    component: Layout,
-    redirect: '/menu',
-    children: [{
-      path: 'menu',
-      name: 'Menu',
-      component: () => import('@/views/menu/create'),
-      meta: { title: 'Menu-Demo', icon: 'dashboard' }
-    }]
-  },
-  {
     path: '/book',
     component: Layout,
     redirect: '/book/create',
     meta: { title: '图书管理', icon: 'dashboard' },
-    children:[{
-      path: '/book/create',
-      name: 'create',
-      component: () => import('@/views/book/create'),
-      meta: { title: '上传图书', icon: 'example' }
-    },{
-      path: '/book/look',
-      name: 'look',
-      component: () => import('@/views/book/create'),
-      meta: { title: '查看图书', icon: 'eye'}
-    }
+    children: [
+      {
+        path: '/book/create',
+        name: 'create',
+        component: () => import('@/views/book/create'),
+        meta: { title: '上传图书', icon: 'example' }
+      },
+      {
+        path: '/book/edit',
+        name: 'edit',
+        component: () => import('@/views/book/edit'),
+        hidden: true,
+        meta: { title: '编辑图书', icon: 'example',activeMenu:'/book/look' }
+      },
+      {
+        path: '/book/look',
+        name: 'look',
+        component: () => import('@/views/book/create'),
+        meta: { title: '图书列表', icon: 'eye' }
+      }
     ]
   }
 ]
 export const asyncRoutes = [
-  {
-    path: '/test',
-    component: Layout,
-    children:[{
-      path: '/test/create',
-      name: 'test',
-      component: () => import('@/views/test/create'),
-      meta: { title: '目录一', icon: 'example' }
-    }
-    ]
-  },
-// 404 page must be placed at the end !!!
-{ path: '*', redirect: '/404', hidden: true }
+
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({

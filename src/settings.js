@@ -1,16 +1,6 @@
 module.exports = {
-
-  title: 'Vue Admin Template',
+  title: '六个周',
   tagsView: true,
-  /**
-   * @type {boolean} true | false
-   * @description Whether fix the header
-   */
   fixedHeader: false,
-
-  /**
-   * @type {boolean} true | false
-   * @description Whether show the logo in sidebar
-   */
   sidebarLogo: true
 }
