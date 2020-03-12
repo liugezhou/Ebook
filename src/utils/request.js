@@ -26,7 +26,6 @@ service.interceptors.response.use(
  
   response => {
     const res = response.data
-    console.log('response')
     if (res.code !== 0) {
       Message({
         message: res.msg || '请求失败',

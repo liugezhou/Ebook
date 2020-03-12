@@ -1,24 +1,24 @@
 <template>
   <div>
-    <detail :isEdit="false"></detail>
+    <detail :is-edit="false" />
   </div>
 </template>
 
 <script>
 import Detail from './components/Detail'
 export default {
-    data(){
-      return{
+  components: {
+    Detail
+  },
+  data() {
+    return {
 
-      }
-    },
-    methods:{
-
-    },
-    components:{
-        Detail
     }
-  
+  },
+  methods: {
+
+  }
+
 }
 </script>
 
