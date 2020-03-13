@@ -8,7 +8,7 @@
       <el-row>
         <Warning />
         <el-col :span="24">
-          <ebook-upload :file-list="fileList" :disbaled="isEdit" @onSuccess="onUploadSuccess" @onRemove="onUploadRemove" />
+          <ebook-upload :file-list="fileList" :disabled="isEdit" @onSuccess="onUploadSuccess" @onRemove="onUploadRemove" />
         </el-col>
         <el-col :span="24">
           <el-form-item prop="title">
@@ -75,7 +75,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="目录结构:" :label-width="labelWidth">
-                <div v-if="postForm.contents && postForm.contents.length > 0" class="content-wrapper">
+                <div v-if="postForm.contentsTree && postForm.contentsTree.length > 0" class="content-wrapper">
                   <el-tree :data="postForm.contentsTree" @node-click="onContentClick" />
                 </div>
                 <span v-else>暂无数据</span>
@@ -88,17 +88,18 @@
   </el-form>
 </template>
 <script>
-import Sticky from '../../../components/Sticky'
-import MDinput from '../../../components/MDinput'
-import EbookUpload from '../../../components/EbookUpload'
+import Sticky from '@/components/Sticky'
+import MDinput from '@/components/MDinput'
+import EbookUpload from '@/components/EbookUpload'
 import Warning from './Warning'
-import { createBook } from '../../../api/book'
+import { createBook, getBook, updateBook } from '@/api/book'
 const fileds = {
   title: '书名',
   author: '作者',
   language: '语言',
   publisher: '出版社'
 }
+
 export default {
   components: {
     Sticky,
@@ -130,12 +131,31 @@ export default {
       }
     }
   },
+  created() {
+    if (this.isEdit) {
+      const fileName = this.$route.params.fileName
+      this.getBookData(fileName)
+    }
+  },
   methods: {
+    getBookData(fileName) {
+      getBook(fileName).then(response => {
+        this.setData(response.data)
+      })
+    },
     onContentClick(data) {
       window.open(data.text)
     },
     showGuide() {
-      console.log('gudl')
+      console.log('gudle')
+    },
+    onsuccess(res) {
+      this.$notify({
+        title: '操作成功',
+        message: res.msg,
+        type: 'success',
+        duration: 2000
+      })
     },
     submitForm() {
       if (!this.loading) {
@@ -143,10 +163,22 @@ export default {
         this.$refs.postForm.validate((valid, fields) => {
           if (valid) {
             const book = Object.assign({}, this.postForm)
-            delete book.contents
             delete book.contentsTree
             if (!this.isEdit) {
-              createBook()
+              createBook(book).then(res => {
+                this.onsuccess(res)
+                this.loading = false
+                this.serDefault()
+              }).catch(() => {
+                this.loading = false
+              })
+            } else {
+              updateBook(book).then(res => {
+                this.onsuccess(res)
+                this.loading = false
+              }).catch(() => {
+                this.loading = false
+              })
             }
           } else {
             const err = fields[Object.keys(fields)[0]][0].message
@@ -156,11 +188,16 @@ export default {
         })
       }
     },
+    serDefault() {
+      this.postForm = {}
+      this.fileList = []
+      this.$refs.postForm.resetFields()
+    },
     onUploadSuccess(data) {
       this.setData(data)
     },
     onUploadRemove() {
-      this.postForm = {}
+      this.serDefault()
     },
     setData(data) {
       const {
@@ -177,10 +214,10 @@ export default {
         coverPath,
         filePath,
         unzipPath,
-        contentsTree
+        contentsTree,
+        updateType
       } = data
       this.postForm = {
-        ...this.postForm,
         title,
         author,
         publisher,
@@ -194,8 +231,10 @@ export default {
         coverPath,
         filePath,
         unzipPath,
+        updateType,
         contentsTree
       }
+      this.fileList = [{ name: originalName || fileName, url }]
     }
   }
 }

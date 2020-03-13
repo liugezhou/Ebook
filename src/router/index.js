@@ -5,7 +5,6 @@ Vue.use(Router)
 
 import Layout from '@/layout'
 
-
 export const constantRoutes = [
   {
     path: '/login',
@@ -43,11 +42,11 @@ export const constantRoutes = [
         meta: { title: '上传图书', icon: 'example' }
       },
       {
-        path: '/book/edit',
+        path: '/book/edit/:fileName',
         name: 'edit',
         component: () => import('@/views/book/edit'),
         hidden: true,
-        meta: { title: '编辑图书', icon: 'example',activeMenu:'/book/look' }
+        meta: { title: '编辑图书', icon: 'example', activeMenu: '/book/look' }
       },
       {
         path: '/book/look',
