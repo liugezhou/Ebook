@@ -63,7 +63,15 @@ div:focus {
 .app-container {
   padding: 20px;
 }
+.filter-container {
+  padding-bottom: 10px;
 
+  .filter-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+  }
+}
 .sub-navbar {
   height: 50px;
   line-height: 50px;

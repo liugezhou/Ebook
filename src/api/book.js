@@ -21,3 +21,17 @@ export function updateBook(book) {
   })
 }
 
+export function getcategory() {
+  return request({
+    url: '/book/category',
+    method: 'get'
+  })
+}
+
+export function listBook(listQuery) {
+  return request({
+    url: '/book/list',
+    method: 'get',
+    params: listQuery
+  })
+}

@@ -49,9 +49,9 @@ export const constantRoutes = [
         meta: { title: '编辑图书', icon: 'example', activeMenu: '/book/look' }
       },
       {
-        path: '/book/look',
-        name: 'look',
-        component: () => import('@/views/book/create'),
+        path: '/book/list',
+        name: 'list',
+        component: () => import('@/views/book/list'),
         meta: { title: '图书列表', icon: 'eye' }
       }
     ]
