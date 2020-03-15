@@ -35,3 +35,11 @@ export function listBook(listQuery) {
     params: listQuery
   })
 }
+
+export function deleteBook(fileName) {
+  return request({
+    url: '/book/delete',
+    method: 'get',
+    params: { fileName }
+  })
+}

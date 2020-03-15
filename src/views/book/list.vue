@@ -32,7 +32,7 @@
           v-for="item in categoryList"
           :key="item.value"
           :label="item.label+'('+item.num+')'"
-          :value="item.value"
+          :value="item.label"
         />
       </el-select>
       <el-button
@@ -71,6 +71,7 @@
       fit
       highlight-current-row
       style="width:100%"
+      :default-sort="defaultSort"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -152,7 +153,7 @@
         align="center"
       >
         <template slot-scope="{ row: { filePath }}">
-          <span>{{ filePath }}</span>
+          <span>{{ filePath | valueFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -161,7 +162,7 @@
         align="center"
       >
         <template slot-scope="{ row: { coverPath }}">
-          <span>{{ coverPath }}</span>
+          <span>{{ coverPath | valueFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -170,7 +171,7 @@
         align="center"
       >
         <template slot-scope="{ row: { unzipPath }}">
-          <span>{{ unzipPath }}</span>
+          <span>{{ unzipPath | valueFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -178,8 +179,8 @@
         width="100"
         align="center"
       >
-        <template slot-scope="{ row: { creatUser }}">
-          <span>{{ creatUser }}</span>
+        <template slot-scope="{ row: { createUser }}">
+          <span>{{ createUser | valueFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -188,7 +189,7 @@
         align="center"
       >
         <template slot-scope="{ row: { createDt }}">
-          <span>{{ createDt }}</span>
+          <span>{{ createDt | timeFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -203,11 +204,21 @@
             icon="el-icon-edit"
             @click="handleUpdate(row)"
           />
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            style="color:red"
+            @click="handleDelete(row)"
+          />
         </template>
       </el-table-column>
     </el-table>
     <pagination
-      :total="0"
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.pageSize"
+      @pagination="refresh"
     />
   </div>
 </template>
@@ -215,13 +226,22 @@
 <script>
 import Pagination from '@/components/Pagination/index'
 import waves from '@/directive/waves/waves'
-import { getcategory, listBook } from '@/api/book'
+import { getcategory, listBook, deleteBook } from '@/api/book'
+import { parseTime } from '@/utils/index'
 export default {
   components: {
     Pagination
   },
   directives: {
     waves
+  },
+  filters: {
+    valueFilter(value) {
+      return value || '无'
+    },
+    timeFilter(time) {
+      return time ? parseTime(time, '{y}-{m}-{d} {h}:{i}') : '无'
+    }
   },
   data() {
     return {
@@ -230,7 +250,9 @@ export default {
       categoryList: [],
       tablekey: 0,
       isLoading: false,
-      list: []
+      list: [],
+      total: 0,
+      defaultSort: {}
     }
   },
   mounted() {
@@ -240,14 +262,37 @@ export default {
   created() {
     this.parseQuery()
   },
+  beforeRouteUpdate(to, from, next) {
+    if (to.path === from.path) {
+      const newQuery = Object.assign({}, to.query)
+      const oldQuery = Object.assign({}, from.query)
+      if (JSON.stringify(newQuery) !== JSON.stringify(oldQuery)) {
+        this.getList()
+      }
+    }
+    next()
+  },
   methods: {
     parseQuery() {
+      const query = Object.assign({}, this.$route.query)
+      let sort = '+id'
       const listQuery = {
         page: 1,
         pageSize: 20,
-        sort: '+id'
+        sort
       }
-      this.listQuery = { ...listQuery, ...this.listQuery }
+      if (query) {
+        query.page && (query.page = +query.page)
+        query.pageSize && (query.pageSize = +query.pageSize)
+        query.sort && (sort = query.sort)
+      }
+      const sortSymbol = sort[0]
+      const sortColumn = sort.slice(1, sort.length)
+      this.defaultSort = {
+        prop: sortColumn,
+        order: sortSymbol === '+' ? 'ascending' : 'descending'
+      }
+      this.listQuery = { ...listQuery, ...query }
     },
     wrapperKeyWord(k, v) {
       function highligh(value) {
@@ -262,8 +307,9 @@ export default {
     getList() {
       this.isLoading = true
       listBook(this.listQuery).then(res => {
-        const { list } = res.data
+        const { list, count } = res.data
         this.list = list
+        this.total = count
         this.isLoading = false
         this.list.forEach(book => {
           book.titleWrapper = this.wrapperKeyWord('title', book.title)
@@ -288,11 +334,35 @@ export default {
         this.categoryList = res.data
       })
     },
+    refresh() {
+      this.$router.push({
+        path: '/book/list',
+        query: this.listQuery
+      })
+    },
     handleFilter(e) {
-      this.getList()
+      this.listQuery.page = 1
+      this.refresh()
     },
     handleUpdate(row) {
       this.$router.push(`/book/edit/${row.fileName}`)
+    },
+    handleDelete(row) {
+      this.$confirm('此操作将永久删除电子书，是否继续', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteBook(row.fileName).then(response => {
+          this.$notify({
+            title: '成功',
+            message: response.msg || '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.handleFilter()
+        })
+      })
     },
     handleCreate() {
       this.$router.push('/book/create')
